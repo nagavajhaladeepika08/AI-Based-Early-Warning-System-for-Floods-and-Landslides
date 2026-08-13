@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Aperture — Live Webcam Filter Studio</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="grain"></div>
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-ring"></span>
+      <div class="brand-text">
+        <h1>Aperture</h1>
+        <p>live webcam filter studio</p>
+      </div>
+    </div>
+    <div class="current-filter-badge">
+      <span class="dot" id="statusDot"></span>
+      <span id="currentFilterLabel">Normal</span>
+    </div>
+  </header>
+
+  <main class="stage">
+
+    <section class="viewport-wrap">
+      <div class="viewport" id="viewportContainer">
+
+        <video id="video" autoplay playsinline muted></video>
+        <canvas id="canvas" class="hidden-canvas"></canvas>
+
+        <div class="viewport-frame">
+          <span class="corner tl"></span>
+          <span class="corner tr"></span>
+          <span class="corner bl"></span>
+          <span class="corner br"></span>
+        </div>
+
+        <div class="countdown-overlay hidden" id="countdownOverlay">
+          <span id="countdownNumber">3</span>
+        </div>
+
+        <div class="permission-overlay" id="permissionOverlay">
+          <div class="permission-card">
+            <div class="lens-icon">
+              <span></span>
+            </div>
+            <h2 id="permissionTitle">Requesting camera access…</h2>
+            <p id="permissionText">Allow camera permission in your browser to start the live preview. Nothing is ever uploaded — everything stays on your device.</p>
+            <button class="btn btn-primary" id="retryPermissionBtn">Try Again</button>
+          </div>
+        </div>
+
+        <div class="viewport-tools">
+          <button class="tool-btn" id="mirrorBtn" title="Mirror camera">
+            <svg viewBox="0 0 24 24"><path d="M12 3v18M5 8l-2 4 2 4M19 8l2 4-2 4" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button class="tool-btn" id="fullscreenBtn" title="Fullscreen">
+            <svg viewBox="0 0 24 24"><path d="M4 9V5a1 1 0 0 1 1-1h4M20 9V5a1 1 0 0 0-1-1h-4M4 15v4a1 1 0 0 0 1 1h4M20 15v4a1 1 0 0 1-1 1h-4" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="camera-actions">
+        <button class="btn btn-primary" id="startBtn">
+          <svg viewBox="0 0 24 24" width="16" height="16"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="4" fill="currentColor"/></svg>
+          Start Camera
+        </button>
+        <button class="btn btn-ghost" id="stopBtn" disabled>
+          <svg viewBox="0 0 24 24" width="16" height="16"><rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor"/></svg>
+          Stop Camera
+        </button>
+
+        <div class="timer-select">
+          <label for="timerSelect">Timer</label>
+          <select id="timerSelect">
+            <option value="0">Off</option>
+            <option value="3">3s</option>
+            <option value="5">5s</option>
+          </select>
+        </div>
+
+        <button class="btn btn-accent" id="captureBtn" disabled>
+          <svg viewBox="0 0 24 24" width="16" height="16"><path d="M4 7h3l1.5-2h7L17 7h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1z" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="13" r="3.2" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+          Capture Photo
+        </button>
+      </div>
+    </section>
+
+    <aside class="control-panel">
+
+      <div class="panel-block">
+        <h3>Filters</h3>
+        <div class="filter-grid" id="filterGrid">
+          <button class="filter-chip active" data-filter="normal">Normal</button>
+          <button class="filter-chip" data-filter="grayscale">B&amp;W</button>
+          <button class="filter-chip" data-filter="sepia">Sepia</button>
+          <button class="filter-chip" data-filter="vintage">Vintage</button>
+          <button class="filter-chip" data-filter="invert">Invert</button>
+          <button class="filter-chip" data-filter="cool">Cool</button>
+          <button class="filter-chip" data-filter="warm">Warm</button>
+          <button class="filter-chip" data-filter="brightness">Brightness</button>
+          <button class="filter-chip" data-filter="contrast">Contrast</button>
+          <button class="filter-chip" data-filter="saturation">Saturation</button>
+          <button class="filter-chip" data-filter="blur">Blur</button>
+        </div>
+      </div>
+
+      <div class="panel-block">
+        <h3>Fine Tune</h3>
+
+        <div class="slider-row" data-slider-row="brightness">
+          <div class="slider-label">
+            <label for="brightnessRange">Brightness</label>
+            <span id="brightnessValue">100%</span>
+          </div>
+          <input type="range" id="brightnessRange" min="0" max="200" value="100" />
+        </div>
+
+        <div class="slider-row" data-slider-row="contrast">
+          <div class="slider-label">
+            <label for="contrastRange">Contrast</label>
+            <span id="contrastValue">100%</span>
+          </div>
+          <input type="range" id="contrastRange" min="0" max="200" value="100" />
+        </div>
+
+        <div class="slider-row" data-slider-row="saturation">
+          <div class="slider-label">
+            <label for="saturationRange">Saturation</label>
+            <span id="saturationValue">100%</span>
+          </div>
+          <input type="range" id="saturationRange" min="0" max="200" value="100" />
+        </div>
+
+        <div class="slider-row" data-slider-row="blur">
+          <div class="slider-label">
+            <label for="blurRange">Blur</label>
+            <span id="blurValue">0px</span>
+          </div>
+          <input type="range" id="blurRange" min="0" max="20" value="0" />
+        </div>
+
+        <button class="btn btn-ghost full-width" id="resetBtn">Reset Filters</button>
+      </div>
+
+    </aside>
+  </main>
+
+  <section class="gallery-section" id="gallerySection">
+    <div class="gallery-header">
+      <h2>Captured Photos</h2>
+      <p>Photos are processed entirely in your browser and never leave your device.</p>
+    </div>
+
+    <div class="latest-photo hidden" id="latestPhotoWrap">
+      <img id="latestPhoto" alt="Latest captured photo" />
+      <div class="latest-photo-actions">
+        <button class="btn btn-primary" id="downloadLatestBtn">Download Photo</button>
+        <button class="btn btn-ghost" id="clearGalleryBtn">Clear Gallery</button>
+      </div>
+    </div>
+
+    <div class="filmstrip" id="filmstrip">
+      <p class="empty-msg" id="emptyGalleryMsg">No photos captured yet — hit "Capture Photo" to take your first shot.</p>
+    </div>
+  </section>
+
+  <footer class="footer-note">
+    <p>Everything runs locally in your browser. No video or photo ever touches a server.</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
